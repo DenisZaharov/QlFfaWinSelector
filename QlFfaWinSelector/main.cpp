@@ -71,7 +71,17 @@ static bool ExtractPlayerName(std::wstring& playerName, const std::string& confi
 	rawPlayerName = &cleanedUpName[0];
 
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	playerName = conv.from_bytes(rawPlayerName);
+	try
+	{
+		playerName = conv.from_bytes(rawPlayerName);
+	}
+	catch (const std::runtime_error& err)
+	{
+		const std::size_t numConverted = conv.converted();
+		rawPlayerName.resize(numConverted);
+		playerName = conv.from_bytes(rawPlayerName);
+	}
+	
 	return true;
 }
 
